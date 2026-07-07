@@ -1,11 +1,10 @@
-🏠 Dashboard
+import customtkinter as ctk
 
-🚗 Veículos
 
-👤 Motoristas
+class Sidebar(ctk.CTkFrame):
 
-📋 Viagens
+    def __init__(self, master):
 
-📊 Relatórios
+        super().__init__(master)
 
-⚙ Configurações
+        self.configure(width=220)
