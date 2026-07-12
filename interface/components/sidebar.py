@@ -8,3 +8,9 @@ class Sidebar(ctk.CTkFrame):
         super().__init__(master)
 
         self.configure(width=220)
+        
+def dasboard():
+   
+def Veiculo():
+
+def Motorista                

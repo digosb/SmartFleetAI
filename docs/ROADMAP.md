@@ -1,29 +1,32 @@
-# Roadmap SmartFleet AI
+# 🚀 Roadmap SmartFleet AI
 
-## Versão 1.0
+## Sprint 01
 - [x] Estrutura do projeto
-- [ ] Interface moderna
-- [ ] Cadastro de viagens
-- [ ] SQLite
+
+## Sprint 02
+- [x] Arquitetura inicial
+- [x] Organização dos módulos
+
+## Sprint 03
+- [ ] Interface Principal
+
+## Sprint 04
+- [ ] Cadastro de Veículos
+
+## Sprint 05
+- [ ] Cadastro de Motoristas
+
+## Sprint 06
+- [ ] Cadastro de Viagens
+
+## Sprint 07
+- [ ] Banco SQLite
+
+## Sprint 08
 - [ ] Dashboard
 
-## Versão 2.0
-- [ ] Cadastro de veículos
-- [ ] Cadastro de motoristas
-- [ ] Relatórios PDF
+## Sprint 09
+- [ ] Relatórios
+
+## Sprint 10
 - [ ] Power BI
-
-## Versão 3.0
-- [ ] Login
-- [ ] Usuários
-- [ ] Permissões
-
-## Versão 4.0
-- [ ] Inteligência Artificial
-- [ ] Comando de voz
-- [ ] Chat inteligente
-
-## Versão 5.0
-- [ ] Sistema Web
-- [ ] API
-- [ ] Banco de dados online
