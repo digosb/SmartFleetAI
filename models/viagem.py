@@ -22,3 +22,4 @@ class Viagem:
         self.destino = destino
         self.carro = carro
         self.placa = placa
+        
