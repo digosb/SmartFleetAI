@@ -1,5 +1,4 @@
 from interface.app import App
-from models.viagem import Viagem
 
 
 if __name__ == "__main__":

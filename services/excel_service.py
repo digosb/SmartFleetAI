@@ -24,7 +24,7 @@ class ExcelService:
 
     def carregar_planilha(self):
 
-        caminho = self.config.obter_caminho_excel()
+        caminho = self.config.obter_caminho_salvo()
 
         if not caminho:
             return None
@@ -45,7 +45,7 @@ class ExcelService:
     
     def salvar_viagem(self, dados):
 
-        caminho = self.config.obter_caminho_excel()
+        caminho = self.config.obter_caminho_salvo()
 
         if not caminho:
             return False

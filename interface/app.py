@@ -264,6 +264,7 @@ class App(ctk.CTk):
     )
 
         status.pack(side="left", padx=20)
+        self.carregar_tabela()
     
     def salvar_viagem(self):
 
@@ -272,9 +273,14 @@ class App(ctk.CTk):
         sucesso = self.excel.salvar_viagem(dados)
 
         if sucesso:
+
+            self.carregar_tabela()
+
             print("Viagem salva com sucesso!")
+
         else:
-            print("Erro ao salvar a viagem.")  
+
+            print("Erro ao salvar a viagem.") 
             
     def obter_dados_formulario(self):
             return {
@@ -289,6 +295,35 @@ class App(ctk.CTk):
             "hora_chegada": self.entry_hora_chegada.get()
      }    
             
+    def carregar_tabela(self):
+
+        # Limpa a Treeview
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        workbook = self.excel.carregar_planilha()
+
+        if workbook is None:
+            return
+
+        worksheet = workbook["Controle dos Veiculos"]
+
+        for linha in worksheet.iter_rows(min_row=2, values_only=True):
+
+            if linha:
+
+                self.tree.insert(
+                    "",
+                    "end",
+                    values=(
+                        linha[0],  # Nome
+                        linha[1],  # Data
+                        linha[6],  # Destino
+                        linha[7],  # Carro
+                        linha[8]   # Placa
+                    )
+                )        
+            
     def selecionar_planilha(self):
 
         caminho = filedialog.askopenfilename(
@@ -302,7 +337,7 @@ class App(ctk.CTk):
 
         if caminho:
 
-            self.caminho_planilha = caminho
+            self.caminho_planilha = self.config.selecionar_planilha()
 
             print("Planilha selecionada:")
             print(self.caminho_planilha)

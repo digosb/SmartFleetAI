@@ -34,28 +34,28 @@ class ConfigService:
             filetypes=[
                 ("Planilhas Excel", "*.xlsx"),
                 ("Todos os arquivos", "*.*")
-        ]
-    )
-
-        return caminho        
-
-    def obter_caminho_excel(self):
-
-        config = self.carregar_config()
-
-        caminho = config.get("excel_path", "")
-    
-        if caminho and os.path.exists(caminho):
-            return caminho
-        
-        caminho = self.selecionar_planilha()
+            ]
+        )
 
         if caminho:
+
+            config = self.carregar_config()
 
             config["excel_path"] = caminho
 
             self.salvar_config(config)
 
+            return caminho
+
+        return None       
+
+    def obter_caminho_salvo(self):
+
+        config = self.carregar_config()
+
+        caminho = config.get("excel_path", "")
+
+        if caminho and os.path.exists(caminho):
             return caminho
 
         return None
