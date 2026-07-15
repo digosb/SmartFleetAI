@@ -15,16 +15,19 @@ class ConfigService:
         
     def carregar_config(self):
 
-        with open(self.config_file, "r", encoding="utf-8") as arquivo:
+        if not os.path.exists(self.config_file):
+            return {}
 
-            return json.load(arquivo)        
+        with open(self.config_file, "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)       
     
     
     def salvar_config(self, dados):
 
-        with open(self.config_file, "w", encoding="utf-8") as arquivo:
+        os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
 
-            json.dump(dados, arquivo, indent=4)    
+        with open(self.config_file, "w", encoding="utf-8") as arquivo:
+            json.dump(dados, arquivo, indent=4) 
         
         
     def selecionar_planilha(self):

@@ -1,5 +1,5 @@
 # Bibliotecas padrão do Python
-from tkinter import filedialog
+from tkinter import messagebox
 from tkinter import ttk
 
 # Bibliotecas de terceiros
@@ -33,6 +33,9 @@ class App(ctk.CTk):
 
         # Layout
         self.criar_layout()
+        
+        # Inicializando a planilha
+        self.inicializar_planilha()
 
     def criar_layout(self):
 
@@ -208,8 +211,9 @@ class App(ctk.CTk):
         self.btn_limpar = ctk.CTkButton(
         self.frame_botoes,
         text="Limpar",
-        width=120
-    )
+        width=120,
+        command=self.limpar_campos
+)
 
         self.btn_limpar.pack(side="left", padx=10)
 
@@ -260,7 +264,7 @@ class App(ctk.CTk):
         
         status = ctk.CTkLabel(
         self.footer,
-        text="Status: Sistema iniciado"
+        text="Status: Sistema_v1.0_Beta",
     )
 
         status.pack(side="left", padx=20)
@@ -270,17 +274,27 @@ class App(ctk.CTk):
 
         dados = self.obter_dados_formulario()
 
+        if not self.validar_dados(dados):
+            return
+
         sucesso = self.excel.salvar_viagem(dados)
 
         if sucesso:
-
             self.carregar_tabela()
+            self.limpar_campos()
 
-            print("Viagem salva com sucesso!")
+            ctk.CTkMessagebox(
+                title="Sucesso",
+                message="Viagem salva com sucesso!"
+            )
+            messagebox.showinfo(
+                "Sucesso",
+                "Viagem salva com sucesso!"
+            )
 
         else:
 
-            print("Erro ao salvar a viagem.") 
+            print("Erro ao salvar a viagem.")
             
     def obter_dados_formulario(self):
             return {
@@ -306,7 +320,7 @@ class App(ctk.CTk):
         if workbook is None:
             return
 
-        worksheet = workbook["Controle dos Veiculos"]
+        worksheet = workbook.active
 
         for linha in worksheet.iter_rows(min_row=2, values_only=True):
 
@@ -326,25 +340,66 @@ class App(ctk.CTk):
             
     def selecionar_planilha(self):
 
-        caminho = filedialog.askopenfilename(
-        title="Selecione a planilha de viagens",
-        filetypes=[
-            ("Planilhas Excel", "*.xlsx"),
-            ("Todos os arquivos", "*.*")
-        ]
-    )
+        self.caminho_planilha = self.config.selecionar_planilha()
 
-
-        if caminho:
-
-            self.caminho_planilha = self.config.selecionar_planilha()
+        if self.caminho_planilha:
 
             print("Planilha selecionada:")
             print(self.caminho_planilha)
 
+            # Atualiza a tabela caso já exista uma planilha com dados
+            self.carregar_tabela()
+
         else:
 
             print("Nenhuma planilha selecionada.")
+             
+    def inicializar_planilha(self):
+
+        self.caminho_planilha = self.config.obter_caminho_salvo()
+
+        if self.caminho_planilha:
+
+            print("Planilha encontrada.")
+
+            self.carregar_tabela()
+
+        else:
+
+            print("Nenhuma planilha configurada.")
             
-           
-        
+    def limpar_campos(self):
+        self.entry_nome.delete(0, "end")
+        self.entry_data.delete(0, "end")
+        self.entry_carro.delete(0, "end")
+        self.entry_placa.delete(0, "end")
+        self.entry_destino.delete(0, "end")
+        self.entry_km_saida.delete(0, "end")
+        self.entry_hora_saida.delete(0, "end")
+        self.entry_km_chegada.delete(0, "end")
+        self.entry_hora_chegada.delete(0, "end")
+
+    def validar_dados(self, dados):
+
+        if not dados["nome"]:
+            messagebox.showwarning(
+                "Campo obrigatório",
+                "Informe o nome."
+            )
+            return False
+
+        if not dados["data"]:
+            messagebox.showwarning(
+                "Campo obrigatório",
+                "Informe a data."
+            )
+            return False
+
+        if not dados["destino"]:
+            messagebox.showwarning(
+                "Campo obrigatório",
+                "Informe o destino."
+            )
+            return False
+
+        return True            

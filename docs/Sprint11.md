@@ -6,4 +6,8 @@
 
 3- falta uma barra de rolagem muito dificil ficar descendo para final
 
-4- 
+4- o codigo app.py esta muito grande da pra separa ou refatorar
+
+5- consigo colocar qual coisa em data e hora temos que melhorar para entrar somente data e hora nos seus respectivos campos 
+
+6- 

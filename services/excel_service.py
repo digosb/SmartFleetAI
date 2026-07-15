@@ -55,7 +55,7 @@ class ExcelService:
         if workbook is None:
             return False
 
-        worksheet = workbook["Controle dos Veiculos"]
+        worksheet = workbook.active
 
         worksheet.append([
             dados["nome"],
