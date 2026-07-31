@@ -1,3 +1,10 @@
+# Aparencia do sistema
+
+# 1- colocar um fundo branco no sistema 
+# 2- separa os itens tipo criar um divisão e com um fundo mais destacado para eles
+# 3- colocar icones 
+
+
 # Cores do sistema
 
 PRIMARY_COLOR = "#1F3A5F"
