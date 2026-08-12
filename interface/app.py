@@ -1,6 +1,5 @@
 # Bibliotecas padrão do Python
 from tkinter import messagebox
-from tkinter import ttk
 
 # Bibliotecas de terceiros
 import customtkinter as ctk

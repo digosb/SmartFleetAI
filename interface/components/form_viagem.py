@@ -8,7 +8,7 @@ class FormViagem(ctk.CTkFrame):
         
         self.campos = {}
         
-        self.criar_componentes()-
+        self.criar_componentes()
         
     def criar_componentes(self):
         
