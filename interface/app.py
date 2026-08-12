@@ -10,6 +10,9 @@ from interface.components.header import Header
 from services.config_service import ConfigService
 from services.excel_service import ExcelService
 from interface.components.form_viagem import FormViagem
+from services.viagem_service import ViagemService
+from interface.components.tabela_viagens import TabelaViagens
+
 
 # Definindo as cores
 fundo_tela = "#2e2e2e"
@@ -38,6 +41,8 @@ class App(ctk.CTk):
         # Inicializa os serviços de configuração e Excel
         self.config = ConfigService()
         self.excel = ExcelService()
+        self.viagem_service = ViagemService(self.excel)
+        self.tabela = TabelaViagens(self.content)
         
     def _inicializar_variaveis(self):
         """Inicializa as variáveis da aplicação."""
@@ -94,17 +99,7 @@ class App(ctk.CTk):
             print("Erro ao salvar a viagem.")
             
     def obter_dados_formulario(self):
-            return {
-            "nome": self.entry_nome.get(),
-            "data": self.entry_data.get(),
-            "carro": self.entry_carro.get(),
-            "placa": self.entry_placa.get(),
-            "destino": self.entry_destino.get(),
-            "km_saida": self.entry_km_saida.get(),
-            "hora_saida": self.entry_hora_saida.get(),
-            "km_chegada": self.entry_km_chegada.get(),
-            "hora_chegada": self.entry_hora_chegada.get()
-     }    
+        dados = self.formulario.obter_dados()  
             
     def carregar_tabela(self):
 
@@ -165,7 +160,6 @@ class App(ctk.CTk):
 
             print("Nenhuma planilha configurada.")
             
-    def limpar_campos(self):
         self.entry_nome.delete(0, "end")
         self.entry_data.delete(0, "end")
         self.entry_carro.delete(0, "end")

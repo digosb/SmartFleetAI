@@ -8,7 +8,7 @@ class FormViagem(ctk.CTkFrame):
         
         self.campos = {}
         
-        self.criar_componentes()
+        self.criar_componentes()-
         
     def criar_componentes(self):
         
@@ -122,3 +122,17 @@ class FormViagem(ctk.CTkFrame):
 
         for campo in self.campos.values():
             campo.delete(0, "end")
+            
+    def obter_dados(self):
+
+        return {
+            "nome": self.entry_nome.get(),
+            "data": self.entry_data.get(),
+            "carro": self.entry_carro.get(),
+            "placa": self.entry_placa.get(),
+            "destino": self.entry_destino.get(),
+            "km_saida": self.entry_km_saida.get(),
+            "hora_saida": self.entry_hora_saida.get(),
+            "km_chegada": self.entry_km_chegada.get(),
+            "hora_chegada": self.entry_hora_chegada.get()
+        }

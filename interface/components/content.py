@@ -1,22 +1,16 @@
+
+
 def criar_content(self):
     """Cria a área principal da aplicação."""
 
+    # Conteúdo
     self.content = ctk.CTkFrame(self)
-    self.content.pack(
-        fill="both",
-        expand=True,
-        padx=15,
-        pady=15
-    )
+    self.content.pack(fill="both", expand=True, padx=15, pady=15)
 
-    titulo = ctk.CTkLabel(
+    titulo_conteudo = ctk.CTkLabel(
         self.content,
         text="Controle de Viagens",
         font=("Arial", 22, "bold")
     )
 
-    titulo.pack(
-        anchor="w",
-        padx=20,
-        pady=20
-    )
+    titulo_conteudo.pack(anchor="w", padx=20, pady=20)

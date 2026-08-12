@@ -9,8 +9,11 @@ class Sidebar(ctk.CTkFrame):
 
         self.configure(width=220)
         
-def dasboard():
-   
-def Veiculo():
+    def dasboard():
+        pass
+    
+    def Veiculo():
+        pass
 
-def Motorista                
+    def Motorista():
+        pass                
