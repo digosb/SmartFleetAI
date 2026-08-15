@@ -1,12 +1,14 @@
 import os
-from openpyxl import Workbook, load_workbook, Workbook
-from services.config_service import ConfigService
+from openpyxl import Workbook, load_workbook
+from services.config_service import ConfigService   
 
 
 class ExcelService:
 
     def __init__(self):
         super().__init__()
+        
+        self.config = ConfigService()   
 
     def criar_planilha(self, caminho):
          

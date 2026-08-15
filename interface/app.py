@@ -37,12 +37,9 @@ class App(ctk.CTk):
     def _inicializar_servicos(self):
         """Inicializa os serviços da aplicação."""
 
-        # Inicializa os serviços de configuração e Excel
         self.config = ConfigService()
         self.excel = ExcelService()
-        self.viagem_service = ViagemService(self.excel)
-        self.tabela = TabelaViagens(self.content)
-        
+         
     def _inicializar_variaveis(self):
         """Inicializa as variáveis da aplicação."""
 
@@ -65,20 +62,13 @@ class App(ctk.CTk):
 
         self.criar_formulario()
 
-        self.criar_botoes()
-
         self.criar_tabela()
-
-        self.criar_footer()
     
     def salvar_viagem(self):
+        
+        self.viagem_service = ViagemService(self.excel)
 
-        dados = self.obter_dados_formulario()
-
-        if not self.validar_dados(dados):
-            return
-
-        sucesso = self.excel.salvar_viagem(dados)
+        sucesso = self.viagem_service.salvar_viagem(dados)
 
         if sucesso:
             self.carregar_tabela()
@@ -98,37 +88,21 @@ class App(ctk.CTk):
             print("Erro ao salvar a viagem.")
             
     def obter_dados_formulario(self):
-        dados = self.formulario.obter_dados()  
-            
-    def carregar_tabela(self):
+        
+        # Obtém os dados do formulário de viagem.
+        return self.formulario.obter_dados()  
+         
+    def criar_tabela(self):
 
-        # Limpa a Treeview
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        self.tabela = TabelaViagens(self.content)
 
-        workbook = self.excel.carregar_planilha()
-
-        if workbook is None:
-            return
-
-        worksheet = workbook.active
-
-        for linha in worksheet.iter_rows(min_row=2, values_only=True):
-
-            if linha:
-
-                self.tree.insert(
-                    "",
-                    "end",
-                    values=(
-                        linha[0],  # Nome
-                        linha[1],  # Data
-                        linha[6],  # Destino
-                        linha[7],  # Carro
-                        linha[8]   # Placa
-                    )
-                )        
-            
+        self.tabela.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=10
+        )
+      
     def selecionar_planilha(self):
 
         self.caminho_planilha = self.config.selecionar_planilha()
@@ -153,21 +127,11 @@ class App(ctk.CTk):
 
             print("Planilha encontrada.")
 
-            self.carregar_tabela()
+            self.carregar_dados_tabela()
 
         else:
 
             print("Nenhuma planilha configurada.")
-            
-        self.entry_nome.delete(0, "end")
-        self.entry_data.delete(0, "end")
-        self.entry_carro.delete(0, "end")
-        self.entry_placa.delete(0, "end")
-        self.entry_destino.delete(0, "end")
-        self.entry_km_saida.delete(0, "end")
-        self.entry_hora_saida.delete(0, "end")
-        self.entry_km_chegada.delete(0, "end")
-        self.entry_hora_chegada.delete(0, "end")
 
     def validar_dados(self, dados):
 
@@ -193,3 +157,53 @@ class App(ctk.CTk):
             return False
 
         return True            
+    
+    def criar_content(self):
+
+        self.content = ctk.CTkFrame(self)
+
+        self.content.pack(
+            fill="both",
+            expand=True,
+            padx=15,
+            pady=15
+        )
+        
+    def criar_formulario(self):
+
+        self.formulario = FormViagem(self.content)
+
+        self.formulario.pack(
+            fill="x",
+            padx=20,
+            pady=10
+         )
+        
+    def carregar_dados_tabela(self):
+
+        workbook = self.excel.carregar_planilha()
+
+        if workbook is None:
+            return
+
+        worksheet = workbook.active
+
+        viagens = []
+
+        for linha in worksheet.iter_rows(min_row=2, values_only=True):
+
+            if linha:
+
+                viagens.append({
+                     "nome": linha[0],
+                    "data": linha[1],
+                    "km_saida": linha[2],
+                    "hora_saida": linha[3],
+                    "km_chegada": linha[4],
+                    "hora_chegada": linha[5],
+                    "destino": linha[6],
+                    "carro": linha[7],
+                    "placa": linha[8]
+                })
+
+        self.tabela.carregar_dados(viagens)
