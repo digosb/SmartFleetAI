@@ -64,20 +64,16 @@ class App(ctk.CTk):
 
         self.criar_tabela()
     
-    def salvar_viagem(self):
-        
-        self.viagem_service = ViagemService(self.excel)
+    def salvar_viagem(self, dados):
 
         sucesso = self.viagem_service.salvar_viagem(dados)
 
         if sucesso:
-            self.carregar_tabela()
-            self.limpar_campos()
 
-            ctk.CTkMessagebox(
-                title="Sucesso",
-                message="Viagem salva com sucesso!"
-            )
+            self.carregar_dados_tabela()
+
+            self.formulario.limpar()
+
             messagebox.showinfo(
                 "Sucesso",
                 "Viagem salva com sucesso!"
@@ -85,8 +81,11 @@ class App(ctk.CTk):
 
         else:
 
-            print("Erro ao salvar a viagem.")
-            
+            messagebox.showwarning(
+                "Dados inválidos",
+                "Preencha os campos obrigatórios."
+            )
+                
     def obter_dados_formulario(self):
         
         # Obtém os dados do formulário de viagem.
@@ -100,6 +99,16 @@ class App(ctk.CTk):
             fill="both",
             expand=True,
             padx=20,
+            pady=10
+        )
+
+        self.botao_excluir = ctk.CTkButton(
+            self.content,
+            text="Excluir Viagem",
+            command=self.excluir_viagem
+        )
+
+        self.botao_excluir.pack(
             pady=10
         )
       
@@ -171,7 +180,7 @@ class App(ctk.CTk):
         
     def criar_formulario(self):
 
-        self.formulario = FormViagem(self.content)
+        self.formulario = FormViagem(self.content,)
 
         self.formulario.pack(
             fill="x",
@@ -181,29 +190,43 @@ class App(ctk.CTk):
         
     def carregar_dados_tabela(self):
 
-        workbook = self.excel.carregar_planilha()
+        viagens = self.viagem_service.listar_viagens()
+        self.tabela.carregar_dados(viagens)
+        
+    def excluir_viagem(self):
 
-        if workbook is None:
+        indice = self.tabela.obter_indice_selecionado()
+
+        if indice is None:
+            messagebox.showwarning(
+                "Nenhuma seleção",
+                "Selecione uma viagem na tabela."
+            )
             return
 
-        worksheet = workbook.active
+        confirmar = messagebox.askyesno(
+            "Confirmar exclusão",
+            "Deseja realmente excluir esta viagem?"
+        )
 
-        viagens = []
+        if not confirmar:
+            return
 
-        for linha in worksheet.iter_rows(min_row=2, values_only=True):
+        sucesso = self.viagem_service.excluir_viagem(indice)
 
-            if linha:
+        if sucesso:
 
-                viagens.append({
-                     "nome": linha[0],
-                    "data": linha[1],
-                    "km_saida": linha[2],
-                    "hora_saida": linha[3],
-                    "km_chegada": linha[4],
-                    "hora_chegada": linha[5],
-                    "destino": linha[6],
-                    "carro": linha[7],
-                    "placa": linha[8]
-                })
+            self.carregar_dados_tabela()
 
-        self.tabela.carregar_dados(viagens)
+            messagebox.showinfo(
+                "Sucesso",
+                "Viagem excluída com sucesso!"
+            )
+
+        else:
+
+            messagebox.showerror(
+                "Erro",
+                "Não foi possível excluir a viagem."
+            )
+            

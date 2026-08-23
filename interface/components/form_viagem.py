@@ -8,6 +8,7 @@ class FormViagem(ctk.CTkFrame):
         super().__init__(master)
 
         self.campos = {}
+        self.ao_salvar = ao_salvar
 
         self.criar_componentes()
 
@@ -282,4 +283,6 @@ class FormViagem(ctk.CTkFrame):
     def salvar(self):
         """Será conectado ao fluxo de salvamento posteriormente."""
 
-        pass
+        dados = self.obter_dados()
+        if self.ao_salvar:
+            self.ao_salvar(dados)

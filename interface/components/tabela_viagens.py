@@ -48,31 +48,39 @@ class TabelaViagens(ctk.CTkFrame):
             pady=10
         )
 
-
     def carregar_dados(self, viagens):  
-
-        self.limpar()
-
-        for viagem in viagens:
-
-            self.tree.insert(
-                "",
-                "end",
-                values=(
-                    viagem["nome"],
-                    viagem["data"],
-                    viagem["km_saida"],
-                    viagem["hora_saida"],
-                    viagem["km_chegada"],
-                    viagem["hora_chegada"],
-                    viagem["destino"],
-                    viagem["carro"],
-                    viagem["placa"]
-                )
-            )
-
+        viagens = self.viagem_service.listar_viagens()
+        
+        self.tabela.carregar_dados(viagens)
 
     def limpar(self):
 
         for item in self.tree.get_children():
             self.tree.delete(item)
+            
+    def criar_tabela(self):
+
+        self.tabela = TabelaViagens(self.content)
+
+        self.tabela.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=10
+        )
+        
+    def obter_indice_selecionado(self):
+
+        selecao = self.tree.selection()
+
+        if not selecao:
+            return None
+
+        item_selecionado = selecao[0]
+
+        indice_visual = self.tree.index(item_selecionado)
+
+        # +2 porque:
+        # índice da tabela começa em 0
+        # linha 1 do Excel é o cabeçalho
+        return indice_visual + 2

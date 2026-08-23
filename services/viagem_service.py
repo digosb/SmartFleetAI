@@ -1,30 +1,37 @@
 from services.excel_service import ExcelService
 
 
-
 class ViagemService:
 
-    def __init__(self, excel_service: ExcelService):
+    def __init__(self, excel_service):
         self.excel = excel_service
 
-    def salvar(self):
+    def salvar_viagem(self, dados):
 
-        dados = self.obter_dados_formulario()
+        if not self.validar_dados(dados):
+            return False
 
-        self.viagem_service.salvar_viagem(dados)
+        return self.excel.salvar_viagem(dados)
 
-        self.carregar_tabela()
+    def validar_dados(self, dados):
 
-        self.limpar_campos()
+        if not dados["nome"]:
+            return False
+
+        if not dados["data"]:
+            return False
+
+        if not dados["destino"]:
+            return False
+
+        return True
 
     def listar_viagens(self):
-        """Retorna todas as viagens."""
-        pass
+        return self.excel.listar_viagens()
 
-    def editar_viagem(self, id_viagem, dados):
-        """Edita uma viagem existente."""
-        pass
+    def excluir_viagem(self, indice):
 
-    def excluir_viagem(self, id_viagem):
-        """Exclui uma viagem."""
+        return self.excel.excluir_viagem(indice)
+
+    def editar_viagem(self):
         pass

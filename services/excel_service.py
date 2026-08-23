@@ -75,28 +75,58 @@ class ExcelService:
             return True
         
     def listar_viagens(self):
-
-            worksheet = self.obter_planilha()
-
-            if worksheet is None:
-                return []
-
-            viagens = []
-
-            for linha in worksheet.iter_rows(min_row=2, values_only=True):
-
-                viagens.append({
-                    "nome": linha[0],
-                    "data": linha[1],
-                    "km_saida": linha[2],
-                    "hora_saida": linha[3],
-                    "km_chegada": linha[4],
-                    "hora_chegada": linha[5],
-                    "destino": linha[6],
-                    "carro": linha[7],
-                    "placa": linha[8]
-                })
-
-            return viagens
+        caminho = self.config.obter_caminho_salvo()
         
+        if not caminho:
+            return []
+        
+        workbook = self.carregar_planilha()
+        
+        if workbook is None:
+            return []
+        
+        worksheet =  workbook.active
+        
+        viagens = []
+        
+        for linha in worksheet.iter_rows(
+            min_row=2,
+            values_only=True
+        ):
+            
+            if not linha:
+                continue
+            
+            viagens.append({
+                "nome": linha[0],
+                "data": linha[1],
+                "km_saida": linha[2],
+                "hora_saida": linha[3],
+                "km_chegada": linha[4],
+                "hora_chegada": linha[5],
+                "destino": linha[6],
+                "carro": linha[7],
+                "placa": linha[8]
+            })
 
+        return viagens
+
+    def excluir_viagem(self, indice):
+
+        caminho = self.config.obter_caminho_salvo()
+
+        if not caminho:
+            return False
+
+        workbook = self.carregar_planilha()
+
+        if workbook is None:
+            return False
+
+        worksheet = workbook.active
+
+        worksheet.delete_rows(indice)
+
+        workbook.save(caminho)
+
+        return True
