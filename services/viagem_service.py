@@ -29,9 +29,13 @@ class ViagemService:
     def listar_viagens(self):
         return self.excel.listar_viagens()
 
-    def excluir_viagem(self, indice):
+    def excluir_viagem(self, id_viagem):
+        """Exclui uma viagem pelo ID."""
+        return self.excel.excluir_viagem(id_viagem)
 
-        return self.excel.excluir_viagem(indice)
+    def editar_viagem(self, id_viagem, dados):
+        """Edita uma viagem existente."""
+        if not self.validar_dados(dados):
+            return False
 
-    def editar_viagem(self):
-        pass
+        return self.excel.editar_viagem(id_viagem, dados)

@@ -39,19 +39,23 @@ class App(ctk.CTk):
 
         self.config = ConfigService()
         self.excel = ExcelService()
+        self.viagem_service = ViagemService(self.excel)
          
     def _inicializar_variaveis(self):
         """Inicializa as variáveis da aplicação."""
 
         # Variável para armazenar o caminho da planilha
         self.caminho_planilha = None
+        
+        # Variável para controlar se está editando uma viagem
+        self.viagem_em_edicao = None
 
     def configurar_janela(self):
-             # Configuração da janela        
-            self.title("SmartFleet AI")
-            self.geometry("1200x700")
-            self.minsize(1000, 600)
-            self.configure(fg_color=fundo_tela)
+        # Configuração da janela        
+        self.title("SmartFleet AI")
+        self.geometry("1200x700")
+        self.minsize(1000, 600)
+        self.configure(fg_color=fundo_tela)
             
     def criar_layout(self):
 
@@ -65,26 +69,39 @@ class App(ctk.CTk):
         self.criar_tabela()
     
     def salvar_viagem(self, dados):
-
-        sucesso = self.viagem_service.salvar_viagem(dados)
-
-        if sucesso:
-
-            self.carregar_dados_tabela()
-
-            self.formulario.limpar()
-
-            messagebox.showinfo(
-                "Sucesso",
-                "Viagem salva com sucesso!"
-            )
-
+        """Salva uma nova viagem ou edita uma existente."""
+        if self.viagem_em_edicao:
+            # Editar viagem existente
+            resultado = self.viagem_service.editar_viagem(self.viagem_em_edicao, dados)
+            if resultado:
+                self.carregar_dados_tabela()
+                self.formulario.limpar()
+                self.viagem_em_edicao = None
+                messagebox.showinfo(
+                    "Sucesso",
+                    "Viagem editada com sucesso!"
+                )
+            else:
+                messagebox.showwarning(
+                    "Dados inválidos",
+                    "Verifique se os campos obrigatórios (nome, data, destino) estão preenchidos."
+                )
         else:
+            # Criar nova viagem
+            resultado = self.viagem_service.salvar_viagem(dados)
 
-            messagebox.showwarning(
-                "Dados inválidos",
-                "Preencha os campos obrigatórios."
-            )
+            if resultado:
+                self.carregar_dados_tabela()
+                self.formulario.limpar()
+                messagebox.showinfo(
+                    "Sucesso",
+                    "Viagem salva com sucesso!"
+                )
+            else:
+                messagebox.showwarning(
+                    "Dados inválidos",
+                    "Verifique se os campos obrigatórios (nome, data, destino) estão preenchidos."
+                )
                 
     def obter_dados_formulario(self):
         
@@ -102,15 +119,30 @@ class App(ctk.CTk):
             pady=10
         )
 
+        # Frame para os botões
+        frame_botoes = ctk.CTkFrame(self.content)
+        frame_botoes.pack(pady=10)
+
+        self.botao_selecionar = ctk.CTkButton(
+            frame_botoes,
+            text="Selecionar Planilha",
+            command=self.selecionar_planilha
+        )
+        self.botao_selecionar.pack(side="left", padx=5)
+
+        self.botao_editar = ctk.CTkButton(
+            frame_botoes,
+            text="Editar Viagem",
+            command=self.editar_viagem_selecionada
+        )
+        self.botao_editar.pack(side="left", padx=5)
+
         self.botao_excluir = ctk.CTkButton(
-            self.content,
+            frame_botoes,
             text="Excluir Viagem",
             command=self.excluir_viagem
         )
-
-        self.botao_excluir.pack(
-            pady=10
-        )
+        self.botao_excluir.pack(side="left", padx=5)
       
     def selecionar_planilha(self):
 
@@ -122,7 +154,7 @@ class App(ctk.CTk):
             print(self.caminho_planilha)
 
             # Atualiza a tabela caso já exista uma planilha com dados
-            self.carregar_tabela()
+            self.carregar_dados_tabela()
 
         else:
 
@@ -140,32 +172,7 @@ class App(ctk.CTk):
 
         else:
 
-            print("Nenhuma planilha configurada.")
-
-    def validar_dados(self, dados):
-
-        if not dados["nome"]:
-            messagebox.showwarning(
-                "Campo obrigatório",
-                "Informe o nome."
-            )
-            return False
-
-        if not dados["data"]:
-            messagebox.showwarning(
-                "Campo obrigatório",
-                "Informe a data."
-            )
-            return False
-
-        if not dados["destino"]:
-            messagebox.showwarning(
-                "Campo obrigatório",
-                "Informe o destino."
-            )
-            return False
-
-        return True            
+            print("Nenhuma planilha configurada.")            
     
     def criar_content(self):
 
@@ -180,7 +187,7 @@ class App(ctk.CTk):
         
     def criar_formulario(self):
 
-        self.formulario = FormViagem(self.content,)
+        self.formulario = FormViagem(self.content, ao_salvar=self.salvar_viagem)
 
         self.formulario.pack(
             fill="x",
@@ -194,10 +201,10 @@ class App(ctk.CTk):
         self.tabela.carregar_dados(viagens)
         
     def excluir_viagem(self):
+        """Exclui a viagem selecionada."""
+        id_viagem = self.tabela.obter_viagem_selecionada()
 
-        indice = self.tabela.obter_indice_selecionado()
-
-        if indice is None:
+        if id_viagem is None:
             messagebox.showwarning(
                 "Nenhuma seleção",
                 "Selecione uma viagem na tabela."
@@ -212,21 +219,47 @@ class App(ctk.CTk):
         if not confirmar:
             return
 
-        sucesso = self.viagem_service.excluir_viagem(indice)
+        sucesso = self.viagem_service.excluir_viagem(id_viagem)
 
         if sucesso:
-
             self.carregar_dados_tabela()
-
             messagebox.showinfo(
                 "Sucesso",
                 "Viagem excluída com sucesso!"
             )
-
         else:
-
             messagebox.showerror(
                 "Erro",
                 "Não foi possível excluir a viagem."
             )
+
+    def editar_viagem_selecionada(self):
+        """Carrega a viagem selecionada no formulário para edição."""
+        id_viagem = self.tabela.obter_viagem_selecionada()
+
+        if id_viagem is None:
+            messagebox.showwarning(
+                "Nenhuma seleção",
+                "Selecione uma viagem na tabela."
+            )
+            return
+
+        # Encontra os dados da viagem
+        viagens = self.viagem_service.listar_viagens()
+        viagem = None
+        for v in viagens:
+            if v["id"] == id_viagem:
+                viagem = v
+                break
+
+        if viagem is None:
+            messagebox.showerror(
+                "Erro",
+                "Viagem não encontrada."
+            )
+            return
+
+        # Carrega os dados no formulário
+        self.formulario.carregar_dados(viagem)
+        self.viagem_em_edicao = id_viagem
             

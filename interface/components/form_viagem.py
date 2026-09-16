@@ -4,7 +4,7 @@ import customtkinter as ctk
 class FormViagem(ctk.CTkFrame):
     """Componente responsável pelo formulário de registro de viagens."""
 
-    def __init__(self, master):
+    def __init__(self, master, ao_salvar=None):
         super().__init__(master)
 
         self.campos = {}
@@ -279,6 +279,14 @@ class FormViagem(ctk.CTkFrame):
 
         for campo in self.campos.values():
             campo.delete(0, "end")
+
+    def carregar_dados(self, dados):
+        """Carrega os dados de uma viagem no formulário."""
+        self.limpar()
+        
+        for chave, valor in dados.items():
+            if chave in self.campos:
+                self.campos[chave].insert(0, str(valor) if valor else "")
 
     def salvar(self):
         """Será conectado ao fluxo de salvamento posteriormente."""

@@ -41,6 +41,10 @@ class TabelaViagens(ctk.CTkFrame):
         self.tree.heading("carro", text="Carro")
         self.tree.heading("placa", text="Placa")
 
+        # Configurar largura das colunas
+        for col in colunas:
+            self.tree.column(col, width=100)
+
         self.tree.pack(
             fill="both",
             expand=True,
@@ -48,39 +52,45 @@ class TabelaViagens(ctk.CTkFrame):
             pady=10
         )
 
-    def carregar_dados(self, viagens):  
-        viagens = self.viagem_service.listar_viagens()
+    def carregar_dados(self, viagens):
+        """Carrega os dados das viagens na tabela."""
+        self.limpar()
         
-        self.tabela.carregar_dados(viagens)
+        for viagem in viagens:
+            self.tree.insert("", "end", values=(
+                viagem["nome"],
+                viagem["data"],
+                viagem["km_saida"],
+                viagem["hora_saida"],
+                viagem["km_chegada"],
+                viagem["hora_chegada"],
+                viagem["destino"],
+                viagem["carro"],
+                viagem["placa"]
+            ), tags=(f"id_{viagem['id']}",))
 
     def limpar(self):
-
+        """Limpa todas as linhas da tabela."""
         for item in self.tree.get_children():
             self.tree.delete(item)
-            
-    def criar_tabela(self):
-
-        self.tabela = TabelaViagens(self.content)
-
-        self.tabela.pack(
-            fill="both",
-            expand=True,
-            padx=20,
-            pady=10
-        )
         
-    def obter_indice_selecionado(self):
-
+    def obter_viagem_selecionada(self):
+        """Retorna os dados da viagem selecionada ou None."""
         selecao = self.tree.selection()
 
         if not selecao:
             return None
 
         item_selecionado = selecao[0]
+        tags = self.tree.item(item_selecionado)['tags']
+        
+        if tags:
+            tag = tags[0]
+            if tag.startswith("id_"):
+                return int(tag.replace("id_", ""))
+        
+        return None
 
-        indice_visual = self.tree.index(item_selecionado)
-
-        # +2 porque:
-        # índice da tabela começa em 0
-        # linha 1 do Excel é o cabeçalho
-        return indice_visual + 2
+    def obter_indice_selecionado(self):
+        """Retorna o ID da viagem selecionada."""
+        return self.obter_viagem_selecionada()
